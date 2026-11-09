@@ -1,0 +1,77 @@
+/* Ergänzungen zu Bootstrap 5 – bewusst minimal. */
+
+:root {
+  --df-primary: #1f3a5f;
+  --df-bg: #f4f6f9;
+}
+
+body {
+  background-color: var(--df-bg);
+}
+
+.df-navbar {
+  background-color: var(--df-primary);
+}
+
+.df-stat-card .df-stat-value {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.df-stat-card .df-stat-label {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.card {
+  border: 0;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.08);
+}
+
+.df-link {
+  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  word-break: break-all;
+}
+
+.df-path {
+  font-family: SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.8rem;
+  color: #495057;
+  word-break: break-all;
+}
+
+.df-upload-card {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+/* Lange Upload-Links in Tabellen einzeilig kürzen (vollständiger Link im Tooltip) */
+.df-link-truncate {
+  display: inline-block;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
+  vertical-align: middle;
+}
+
+/* Dokumentvorschau auf der Prüfseite */
+.df-preview iframe {
+  width: 100%;
+  height: 75vh;
+  min-height: 480px;
+  border: 0;
+  display: block;
+}
+
+.df-preview img {
+  max-height: 75vh;
+}

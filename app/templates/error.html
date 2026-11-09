@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block navbar %}
+  {% if public %}
+  <nav class="navbar navbar-dark df-navbar">
+    <div class="container"><span class="navbar-brand fw-semibold"><i class="bi bi-folder-symlink me-2"></i>DocFlow</span></div>
+  </nav>
+  {% else %}
+  {{ super() }}
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="card df-upload-card">
+  <div class="card-body p-4 text-center">
+    <i class="bi bi-exclamation-octagon text-danger" style="font-size: 3rem;"></i>
+    <h1 class="h4 mt-3">{{ title }}</h1>
+    <p class="text-muted mb-0">{{ message }}</p>
+  </div>
+</div>
+{% endblock %}

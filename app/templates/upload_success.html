@@ -1,0 +1,29 @@
+{% extends "upload.html" %}
+{% block title %}Upload erfolgreich{% endblock %}
+
+{% block content %}
+<div class="card df-upload-card">
+  <div class="card-body p-4 text-center">
+    <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
+    <h1 class="h4 mt-3">Vielen Dank!</h1>
+    {% if unclassified %}
+    <p class="text-muted">Ihr Dokument wurde erfolgreich übermittelt. Es konnte nicht automatisch eindeutig zugeordnet werden und wird von uns geprüft und abgelegt – Sie müssen nichts weiter tun.</p>
+    {% else %}
+    <p class="text-muted">Ihr Dokument wurde erfolgreich übermittelt und in Ihrer Mandantenakte abgelegt.</p>
+    {% endif %}
+
+    <table class="table table-sm text-start mt-4 mb-4">
+      <tr><th class="text-muted fw-normal w-50">Unternehmen</th><td>{{ company_name }}</td></tr>
+      {% if not unclassified %}
+      <tr><th class="text-muted fw-normal">Dokumentart</th><td>{{ document_label }}{% if auto_classified %} <span class="badge text-bg-light border">automatisch erkannt</span>{% endif %}</td></tr>
+      <tr><th class="text-muted fw-normal">Zeitraum</th><td>{{ period }}</td></tr>
+      {% endif %}
+      <tr><th class="text-muted fw-normal">Datei</th><td class="text-break">{{ original_filename }}</td></tr>
+    </table>
+
+    <a href="/upload/{{ token }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Weiteres Dokument hochladen</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}{% endblock %}

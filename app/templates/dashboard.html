@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Dashboard</h1>
+
+<div class="row g-3 mb-4">
+  {% set cards = [
+    ("Mandanten", stats.customer_count, "bi-building", "text-primary"),
+    ("Dokumente gesamt", stats.document_count, "bi-files", "text-secondary"),
+    ("Uploads heute", stats.uploads_today, "bi-calendar-day", "text-info"),
+    ("Erfolgreich", stats.successful_uploads, "bi-check-circle", "text-success"),
+    ("Fehlgeschlagen", stats.failed_uploads, "bi-x-circle", "text-danger"),
+    ("Prüfung nötig", stats.review_needed, "bi-eye", "text-warning"),
+  ] %}
+  {% for label, value, icon, color in cards %}
+  <div class="col-6 col-md-4 col-xl-2">
+    <div class="card df-stat-card h-100">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <div class="df-stat-value">{{ value }}</div>
+            <div class="df-stat-label">{{ label }}</div>
+          </div>
+          <i class="bi {{ icon }} fs-4 {{ color }}"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <div class="card-header bg-white fw-semibold">Letzte Uploads</div>
+  {% include "_uploads_table.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ customer.company_name }}{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/admin/customers">Mandanten</a></li>
+    <li class="breadcrumb-item active" aria-current="page">{{ customer.company_name }}</li>
+  </ol>
+</nav>
+
+{% if created %}
+<div class="alert alert-success" role="alert">
+  <i class="bi bi-check-circle me-1"></i>
+  Mandant angelegt. Die Ordnerstruktur wurde erzeugt, der persönliche Upload-Link ist bereit.
+</div>
+{% endif %}
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-5">
+    <div class="card h-100">
+      <div class="card-body">
+        <h1 class="h4 mb-3">{{ customer.company_name }}</h1>
+        <dl class="row mb-0 small">
+          <dt class="col-5 text-muted fw-normal">Mandantennummer</dt><dd class="col-7">{{ customer.customer_number }}</dd>
+          <dt class="col-5 text-muted fw-normal">Interne ID</dt><dd class="col-7">{{ customer.id }}</dd>
+          <dt class="col-5 text-muted fw-normal">Angelegt am</dt><dd class="col-7">{{ customer.created_at | datetime_de }}</dd>
+          <dt class="col-5 text-muted fw-normal">Mandantenakte</dt><dd class="col-7 df-path">storage/{{ customer.folder_name }}/</dd>
+          <dt class="col-5 text-muted fw-normal">Dokumente</dt><dd class="col-7">{{ success_count }} gespeichert</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-body">
+        <h2 class="h6 text-uppercase text-muted mb-3">Persönlicher Upload-Link</h2>
+        <div class="input-group mb-2">
+          <input type="text" class="form-control df-link" value="{{ upload_url }}" readonly aria-label="Upload-Link">
+          <button class="btn btn-outline-secondary" type="button" data-copy="{{ upload_url }}">
+            <i class="bi bi-clipboard"></i> Kopieren
+          </button>
+          <a class="btn btn-primary" href="{{ upload_url }}" target="_blank" rel="noopener">
+            <i class="bi bi-box-arrow-up-right"></i> Öffnen
+          </a>
+        </div>
+        <p class="small text-muted mb-0">
+          Diesen Link erhält der Mandant. Er enthält einen zufälligen Token und keine
+          Rückschlüsse auf Firmenname oder interne Ordner.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-white fw-semibold">Upload-Historie</div>
+  {% set show_customer = false %}
+  {% set show_path = true %}
+  {% include "_uploads_table.html" %}
+</div>
+{% endblock %}

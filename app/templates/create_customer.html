@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Neuer Mandant{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/admin/customers">Mandanten</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Neuer Mandant</li>
+  </ol>
+</nav>
+
+<div class="row">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-body p-4">
+        <h1 class="h4 mb-3">Neuen Mandanten anlegen</h1>
+        <p class="text-muted small">
+          DocFlow erzeugt automatisch eine interne ID, einen sicheren Upload-Link und die
+          Standard-Ordnerstruktur (Stammdaten + FIBU für das aktuelle Jahr).
+        </p>
+
+        {% if error %}
+        <div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="/admin/customers/new" novalidate>
+          <div class="mb-3">
+            <label for="company_name" class="form-label">Unternehmensname</label>
+            <input type="text" class="form-control" id="company_name" name="company_name"
+                   value="{{ form.company_name or '' }}" placeholder="z. B. Muster GmbH" maxlength="200" required autofocus>
+          </div>
+          <div class="mb-4">
+            <label for="customer_number" class="form-label">Mandantennummer</label>
+            <input type="text" class="form-control" id="customer_number" name="customer_number"
+                   value="{{ form.customer_number or '' }}" placeholder="z. B. 10001" inputmode="numeric"
+                   pattern="[0-9]+" maxlength="20" required>
+            <div class="form-text">Nur Ziffern. Jede Nummer kann nur einmal vergeben werden.</div>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Mandant anlegen</button>
+            <a href="/admin/customers" class="btn btn-outline-secondary">Abbrechen</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

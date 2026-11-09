@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Unterlagen hochladen{% endblock %}
+
+{# Kundenseite: keine Navigation in den Mitarbeiterbereich #}
+{% block navbar %}
+<nav class="navbar navbar-dark df-navbar">
+  <div class="container">
+    <span class="navbar-brand fw-semibold"><i class="bi bi-folder-symlink me-2"></i>DocFlow</span>
+  </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="card df-upload-card">
+  <div class="card-body p-4">
+    <h1 class="h4 mb-1">Unterlagen hochladen</h1>
+    <p class="text-muted mb-4">für <strong>{{ company_name }}</strong></p>
+
+    {% if error %}
+    <div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+      <div class="mb-3">
+        <label for="file" class="form-label">Datei</label>
+        <input class="form-control" type="file" id="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+        <div class="form-text">PDF, JPG oder PNG (auch Foto oder Scan) · maximal {{ max_size_mb }} MB</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="document_type" class="form-label">Dokumentart</label>
+        <select class="form-select" id="document_type" name="document_type">
+          <option value="{{ auto }}" data-period="auto" {% if selected_type == auto or not selected_type %}selected{% endif %}>
+            Automatisch erkennen (empfohlen)
+          </option>
+          <optgroup label="Buchhaltung (FIBU)">
+            {% for t in fibu_types %}
+            <option value="{{ t.key }}" data-period="1" {% if t.key == selected_type %}selected{% endif %}>{{ t.label }}</option>
+            {% endfor %}
+          </optgroup>
+          <optgroup label="Stammdaten">
+            {% for t in stammdaten_types %}
+            <option value="{{ t.key }}" data-period="0" {% if t.key == selected_type %}selected{% endif %}>{{ t.label }}</option>
+            {% endfor %}
+          </optgroup>
+        </select>
+        <div class="form-text" id="auto-hint">
+          DocFlow liest das Dokument und ordnet es selbst zu – Dokumentart und Monat werden automatisch erkannt.
+        </div>
+      </div>
+
+      <div class="mb-3" id="period-group">
+        <label for="period" class="form-label">Zeitraum</label>
+        <select class="form-select" id="period" name="period">
+          <option value="{{ auto }}" {% if selected_period == auto or not selected_period %}selected{% endif %}>Automatisch aus dem Dokument</option>
+          {% for value, label in period_choices %}
+          <option value="{{ value }}" {% if value == selected_period %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <div class="form-text">Monat, auf den sich der Beleg bezieht.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-2"><i class="bi bi-cloud-arrow-up me-1"></i>Dokument hochladen</button>
+    </form>
+  </div>
+</div>
+<p class="text-center text-muted small mt-3"><i class="bi bi-shield-lock me-1"></i>Ihre Dokumente werden direkt in Ihrer Mandantenakte abgelegt.</p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Zeitraum nur bei manuell gewählten FIBU-Dokumenten anzeigen (der Server prüft unabhängig davon).
+  (function () {
+    const typeSelect = document.getElementById("document_type");
+    const periodGroup = document.getElementById("period-group");
+    const autoHint = document.getElementById("auto-hint");
+    function update() {
+      const option = typeSelect.selectedOptions[0];
+      const mode = option ? option.dataset.period : "auto";
+      // Automatisch: Zeitraum wird mit erkannt. Stammdaten: kein Zeitraum nötig.
+      periodGroup.classList.toggle("d-none", mode !== "1");
+      autoHint.classList.toggle("d-none", mode !== "auto");
+    }
+    typeSelect.addEventListener("change", update);
+    update();
+  })();
+</script>
+{% endblock %}

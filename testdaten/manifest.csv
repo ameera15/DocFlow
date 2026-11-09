@@ -1,0 +1,17 @@
+datei;mandant;erwartete_art;erwarteter_zeitraum;kategorie;hinweis
+rechnungen_zugferd/zugferd_2p0_BASIC_Einfach.pdf;Kunden AG Mitte;eingangsrechnung;2018-03;Rechnung;Mandant ist Käufer
+rechnungen_zugferd/zugferd_2p0_EN16931_Betriebskostenabrechnung.pdf;Beispielmieter GmbH;eingangsrechnung;2010-01;Rechnung;Leistungszeitraum über ein ganzes Jahr – erster Monat zählt
+rechnungen_zugferd/zugferd_2p0_EN16931_Elektron.pdf;ConsultingService GmbH;eingangsrechnung;2018-03;Rechnung;Baurechnung; Leistungsdatum vor Rechnungsdatum
+rechnungen_zugferd/zugferd_2p0_EN16931_Miete.pdf;MUSTER-KUNDE GMBH;eingangsrechnung;2018-09;Rechnung;Mietrechnung
+rechnungen_zugferd/zugferd_2p0_EN16931_Reisekostenabrechnung.pdf;Kunden AG Mitte;eingangsrechnung;2018-07;Rechnung;Leistungszeitraum 09.–11.07.2018
+rechnungen_zugferd/zugferd_2p0_EXTENDED_Fremdwaehrung.pdf;Metallbau Leipzig GmbH & Co. KG;eingangsrechnung;2018-10;Rechnung;Rechnung in GBP
+rechnungen_zugferd/zugferd_2p0_BASIC_Taxifahrt.pdf;Taxiunternehmen TX GmbH;ausgangsrechnung;2018-10;Rechnung;Mandant ist Verkäufer
+rechnungen_zugferd/zugferd_2p0_EN16931_OEPNV.pdf;Verkehrsbetriebe GmbH;ausgangsrechnung;2018-09;Rechnung;Mandant ist Verkäufer
+rechnungen_zugferd/zugferd_2p0_EN16931_Rechnungskorrektur.pdf;Musterlieferant GmbH;ausgangsrechnung;2018-08;Rechnung;Rechnungskorrektur, Mandant ist Verkäufer
+rechnungen_zugferd/zugferd_2p0_EXTENDED_Warenrechnung.pdf;Musterlieferant GmbH;ausgangsrechnung;2018-08;Rechnung;Mandant ist Verkäufer
+grenzfaelle/zugferd_2p0_EN16931_Gutschrift.pdf;Kunden AG Mitte;eingangsrechnung;2018-03;Grenzfall;Gutschrift (selbst ausgestellte Rechnung)
+grenzfaelle/MustangGnuaccountingBeispielRE-20201121_508.pdf;Bei Spiel GmbH;ausgangsrechnung;2020-11;Grenzfall;englische Rechnung, ISO-Datumsformat
+grenzfaelle/zugferd_2p0_MINIMUM.pdf;Kunden AG Mitte;ungeklaert;;Grenzfall;"Buchungshilfe – KEINE Rechnung" sollte zur Prüfung
+grenzfaelle/Facture_FR_BASICWL.pdf;Muster GmbH;ungeklaert;;Grenzfall;französische Rechnung ohne deutsche Begriffe
+xrechnung_xml/01.01a-INVOICE_ubl.xml;Muster GmbH;abgelehnt;;Negativtest;reine XML-E-Rechnung (UBL) – Dateityp nicht erlaubt
+xrechnung_xml/01.01a-INVOICE_uncefact.xml;Muster GmbH;abgelehnt;;Negativtest;reine XML-E-Rechnung (CII) – Dateityp nicht erlaubt

@@ -1,0 +1,69 @@
+{# Gemeinsame Upload-Tabelle für Dashboard und Mandantendetail.
+   Erwartet: uploads; optional show_customer (Standard: true), show_path #}
+{% set show_customer = show_customer if show_customer is defined else true %}
+{% if uploads %}
+<div class="table-responsive">
+  <table class="table table-hover mb-0">
+    <thead class="table-light">
+      <tr>
+        <th>Datum</th>
+        {% if show_customer %}<th>Mandant</th>{% endif %}
+        <th>Dokumentart</th>
+        <th>Zeitraum</th>
+        <th>Dateiname</th>
+        {% if show_path %}<th>Ablage</th>{% endif %}
+        <th>Status</th>
+        <th class="text-end">Aktion</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in uploads %}
+      <tr>
+        <td class="text-nowrap" title="{{ doc.uploaded_at | datetime_de }}">{{ doc.uploaded_at | date_de }}</td>
+        {% if show_customer %}
+        <td><a href="/admin/customers/{{ doc.customer.id }}" class="text-decoration-none">{{ doc.customer.company_name }}</a></td>
+        {% endif %}
+        <td>
+          {{ doc.document_type | doc_type_label }}
+          {% if doc.auto_classified and doc.document_type != "ungeklaert" %}<div class="small text-muted"><i class="bi bi-magic"></i> automatisch erkannt</div>{% endif %}
+        </td>
+        <td>{{ format_period(doc.year, doc.month) }}</td>
+        <td>
+          {% if doc.is_success %}
+          <a href="/admin/documents/{{ doc.id }}/file" target="_blank" rel="noopener" class="text-decoration-none" title="Dokument öffnen">
+            <i class="bi bi-file-earmark-text me-1"></i>{{ doc.original_filename }}</a>
+          {% else %}
+          {{ doc.original_filename }}
+          {% endif %}
+          {% if doc.stored_filename and doc.stored_filename != doc.original_filename %}
+          <div class="small text-muted">→ {{ doc.stored_filename }}</div>
+          {% endif %}
+        </td>
+        {% if show_path %}
+        <td class="df-path">{{ doc.destination_path or "–" }}</td>
+        {% endif %}
+        <td>
+          {% if doc.is_success %}
+          <span class="badge text-bg-success">{{ doc.status | status_label }}</span>
+          {% if doc.needs_review %}<span class="badge text-bg-warning" title="{{ doc.analysis.review_reason }}">Prüfung nötig</span>
+          {% elif doc.is_corrected %}<span class="badge text-bg-info" title="Einordnung wurde von einem Mitarbeiter korrigiert">Korrigiert</span>{% endif %}
+          {% else %}
+          <span class="badge text-bg-danger" title="{{ doc.error_message or '' }}">{{ doc.status | status_label }}</span>
+          {% if doc.error_message %}<div class="small text-muted mt-1">{{ doc.error_message }}</div>{% endif %}
+          {% endif %}
+        </td>
+        <td class="text-end">
+          {% if doc.is_success %}
+          <a class="btn btn-sm {{ 'btn-warning' if doc.needs_review else 'btn-outline-primary' }} text-nowrap" href="/admin/documents/{{ doc.id }}">
+            <i class="bi bi-search"></i> Prüfen
+          </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="card-body text-muted">Noch keine Uploads vorhanden.</div>
+{% endif %}

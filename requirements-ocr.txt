@@ -1,0 +1,7 @@
+# OPTIONAL: Texterkennung (OCR) für Fotos und gescannte PDFs.
+# Nur pip-Pakete – kein Zusatzprogramm nötig, die Erkennungsmodelle sind enthalten.
+#   pip install -r requirements-ocr.txt
+rapidocr>=3.0
+onnxruntime>=1.20
+Pillow>=10.1
+pypdfium2>=4.20

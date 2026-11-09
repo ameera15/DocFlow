@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Dokument prüfen{% endblock %}
+{% block content %}
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/admin/customers">Mandanten</a></li>
+    <li class="breadcrumb-item"><a href="/admin/customers/{{ doc.customer.id }}">{{ doc.customer.company_name }}</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Dokument prüfen</li>
+  </ol>
+</nav>
+
+{% if saved %}
+<div class="alert alert-success" role="alert">
+  <i class="bi bi-check-circle me-1"></i>Einordnung korrigiert. Die Datei wurde in den neuen Zielordner verschoben.
+</div>
+{% endif %}
+{% if confirmed %}
+<div class="alert alert-success" role="alert">
+  <i class="bi bi-check-circle me-1"></i>Einordnung bestätigt. Die Prüfung ist abgeschlossen.
+</div>
+{% endif %}
+
+<div class="row g-3">
+  <!-- Vorschau -->
+  <div class="col-lg-7">
+    <div class="card h-100">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <span class="fw-semibold text-break">{{ doc.original_filename }}</span>
+        <span class="d-flex gap-2">
+          <a class="btn btn-sm btn-outline-secondary" href="/admin/documents/{{ doc.id }}/file" target="_blank" rel="noopener">
+            <i class="bi bi-box-arrow-up-right"></i> In neuem Tab
+          </a>
+          <a class="btn btn-sm btn-outline-secondary" href="/admin/documents/{{ doc.id }}/file?download=1">
+            <i class="bi bi-download"></i> Herunterladen
+          </a>
+        </span>
+      </div>
+      <div class="card-body p-0 df-preview">
+        {% if media_type == "application/pdf" %}
+        <iframe src="/admin/documents/{{ doc.id }}/file" title="Dokumentvorschau"></iframe>
+        {% else %}
+        <div class="p-3 text-center"><img src="/admin/documents/{{ doc.id }}/file" alt="Dokumentvorschau" class="img-fluid"></div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Einordnung -->
+  <div class="col-lg-5">
+    {% set a = doc.analysis %}
+    {% if a %}
+    <div class="card mb-3 {% if doc.needs_review %}border border-warning{% endif %}">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <h1 class="h5 mb-0">Erkennung</h1>
+          {% if doc.needs_review %}<span class="badge text-bg-warning">Prüfung nötig</span>
+          {% elif a.reviewed_at %}<span class="badge text-bg-success">Geprüft</span>
+          {% else %}<span class="badge text-bg-light border">Keine Prüfung nötig</span>{% endif %}
+        </div>
+        <dl class="row small mb-2">
+          <dt class="col-4 text-muted fw-normal">Einordnung</dt>
+          <dd class="col-8">{{ "automatisch erkannt" if a.method == "automatisch" else "vom Mandanten gewählt" }}</dd>
+          <dt class="col-4 text-muted fw-normal">Textquelle</dt>
+          <dd class="col-8">{{ {"pdf-text": "Text des PDFs", "ocr": "Texterkennung (OCR)", "keine": "kein Text lesbar"}[a.text_source] }}</dd>
+          <dt class="col-4 text-muted fw-normal">Erkannt als</dt>
+          <dd class="col-8">
+            {% if a.detected_type %}{{ a.detected_type | doc_type_label }}{% if a.detected_year %} · {{ format_period(a.detected_year, a.detected_month) }}{% endif %}{% else %}–{% endif %}
+            <span class="text-muted">(Sicherheit: {{ a.confidence }})</span>
+          </dd>
+        </dl>
+        {% if a.evidence_list %}
+        <ul class="small text-muted mb-2 ps-3">
+          {% for e in a.evidence_list %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% if a.review_reason %}
+        <div class="alert {{ 'alert-warning' if doc.needs_review else 'alert-light' }} small py-2 mb-2">
+          <strong>Grund für die Prüfung:</strong>
+          <ul class="mb-0 ps-3">{% for r in a.review_reason.split("\n") %}<li>{{ r }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+        {% if a.reviewed_at %}
+        <div class="small text-muted">Geprüft am {{ a.reviewed_at | datetime_de }} von {{ a.reviewed_by }}</div>
+        {% endif %}
+        {% if doc.needs_review and doc.document_type != "ungeklaert" %}
+        <form method="post" action="/admin/documents/{{ doc.id }}/confirm" class="mt-2">
+          <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check2 me-1"></i>Einordnung ist korrekt – bestätigen</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="card mb-3">
+      <div class="card-body">
+        <h1 class="h5 mb-3">Aktuelle Einordnung</h1>
+        <dl class="row small mb-0">
+          <dt class="col-4 text-muted fw-normal">Dokumentart</dt><dd class="col-8">{{ doc.document_type | doc_type_label }}</dd>
+          <dt class="col-4 text-muted fw-normal">Zeitraum</dt><dd class="col-8">{{ format_period(doc.year, doc.month) }}</dd>
+          <dt class="col-4 text-muted fw-normal">Hochgeladen</dt><dd class="col-8">{{ doc.uploaded_at | datetime_de }}</dd>
+          <dt class="col-4 text-muted fw-normal">Ablage</dt><dd class="col-8 df-path">{{ doc.destination_path }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <h2 class="h5 mb-1">Einordnung korrigieren</h2>
+        <p class="small text-muted">
+          Passt der Inhalt nicht zur gewählten Dokumentart oder zum Zeitraum, hier korrigieren.
+          DocFlow berechnet den neuen Zielordner und verschiebt die Datei automatisch.
+        </p>
+
+        {% if error %}
+        <div class="alert alert-danger py-2" role="alert"><i class="bi bi-exclamation-triangle me-1"></i>{{ error }}</div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          <div class="mb-3">
+            <label for="document_type" class="form-label">Dokumentart</label>
+            <select class="form-select" id="document_type" name="document_type">
+              <optgroup label="Buchhaltung (FIBU)">
+                {% for t in fibu_types %}
+                <option value="{{ t.key }}" data-period="1" {% if t.key == selected_type %}selected{% endif %}>{{ t.label }}</option>
+                {% endfor %}
+              </optgroup>
+              <optgroup label="Stammdaten">
+                {% for t in stammdaten_types %}
+                <option value="{{ t.key }}" data-period="0" {% if t.key == selected_type %}selected{% endif %}>{{ t.label }}</option>
+                {% endfor %}
+              </optgroup>
+            </select>
+          </div>
+          <div class="mb-3" id="period-group">
+            <label for="period" class="form-label">Zeitraum</label>
+            <select class="form-select" id="period" name="period">
+              <option value="">Bitte wählen …</option>
+              {% for value, label in period_choices %}
+              <option value="{{ value }}" {% if value == selected_period %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-arrow-left-right me-1"></i>Korrigieren &amp; verschieben</button>
+        </form>
+      </div>
+    </div>
+
+    {% if doc.corrections %}
+    <div class="card">
+      <div class="card-header bg-white fw-semibold">Korrektur-Historie</div>
+      <ul class="list-group list-group-flush small">
+        {% for c in doc.corrections %}
+        <li class="list-group-item">
+          <div class="text-muted">{{ c.corrected_at | datetime_de }} · {{ c.corrected_by }}</div>
+          {{ c.old_document_type | doc_type_label }} ({{ format_period(c.old_year, c.old_month) }})
+          → <strong>{{ c.new_document_type | doc_type_label }} ({{ format_period(c.new_year, c.new_month) }})</strong>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function () {
+    const typeSelect = document.getElementById("document_type");
+    const periodGroup = document.getElementById("period-group");
+    function update() {
+      const option = typeSelect.selectedOptions[0];
+      periodGroup.classList.toggle("d-none", !!option && option.dataset.period === "0");
+    }
+    typeSelect.addEventListener("change", update);
+    update();
+  })();
+</script>
+{% endblock %}
